@@ -1,5 +1,6 @@
 namespace SpriteKind {
     export const Im = SpriteKind.create()
+    export const Meteor = SpriteKind.create()
 }
 sprites.onOverlap(SpriteKind.Im, SpriteKind.Enemy, function (sprite, otherSprite) {
     tiles.placeOnRandomTile(sprite, assets.tile`transparency16`)
@@ -158,7 +159,39 @@ function levelStart () {
     }
     tiles.placeOnRandomTile(mySprite, assets.tile`transparency16`)
     Commanda[randint(0, Commanda.length - 1)].setKind(SpriteKind.Enemy)
+    Meteor = []
+    ScorMeteor = randint(5, 20)
+    for (let index = 0; index <= ScorMeteor - 1; index++) {
+        Meteor.unshift(sprites.create(img`
+            . . . . . . . c c c a c . . . . 
+            . . c c b b b a c a a a c . . . 
+            . c c a b a c b a a a b c c . . 
+            . c a b c f f f b a b b b a . . 
+            . c a c f f f 8 a b b b b b a . 
+            . c a 8 f f 8 c a b b b b b a . 
+            c c c a c c c c a b c f a b c c 
+            c c a a a c c c a c f f c b b a 
+            c c a b 6 a c c a f f c c b b a 
+            c a b c 8 6 c c a a a b b c b c 
+            c a c f f a c c a f a c c c b . 
+            c a 8 f c c b a f f c b c c c . 
+            . c b c c c c b f c a b b a c . 
+            . . a b b b b b b b b b b b c . 
+            . . . c c c c b b b b b c c . . 
+            . . . . . . . . c b b c . . . . 
+            `, SpriteKind.Meteor))
+        tiles.placeOnRandomTile(Meteor[0], assets.tile`myTile1`)
+    }
+    for (let value of tiles.getTilesByType(assets.tile`myTile1`)) {
+        tiles.setTileAt(value, assets.tile`tile6`)
+    }
 }
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+	
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Meteor, function (sprite, otherSprite) {
+    destroyMeteor(otherSprite)
+})
 scene.onOverlapTile(SpriteKind.Enemy, assets.tile`tile6`, function (sprite, location) {
     if (sprite.vx == 0 - speed) {
         sprite.vx = 0 - speed / 7
@@ -170,6 +203,24 @@ scene.onOverlapTile(SpriteKind.Enemy, assets.tile`tile6`, function (sprite, loca
         sprite.vy = speed / 7
     }
 })
+function destroyMeteor (mySprite: Sprite) {
+    mySprite.destroy(effects.fire, 500)
+    Meteor.removeAt(Meteor.indexOf(mySprite))
+    if (Meteor.length == 0) {
+        if (tiles.getTilesByType(assets.tile`tile-off`).length == 0) {
+            game.splash("Двигатели запущены. Путь свободен! К звездам!")
+            runBust = tiles.getTilesByType(assets.tile`tile12`)
+            for (let value of runBust) {
+                tiles.setTileAt(value, assets.tile`tile13`)
+            }
+        } else {
+            game.splash("Путь свободен! Запустите двигатели!")
+        }
+    }
+}
+sprites.onOverlap(SpriteKind.Im, SpriteKind.Meteor, function (sprite, otherSprite) {
+    destroyMeteor(otherSprite)
+})
 scene.onOverlapTile(SpriteKind.Im, assets.tile`tile1`, function (sprite, location) {
     tiles.setTileAt(location, assets.tile`tile2`)
     info.setScore(tiles.getTilesByType(assets.tile`tile1`).length)
@@ -178,6 +229,142 @@ scene.onOverlapTile(SpriteKind.Im, assets.tile`tile1`, function (sprite, locatio
         level_select()
         levelStart()
     }
+})
+controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    animation.runImageAnimation(
+    mySprite,
+    [img`
+        . . f f f f f f f f . . . . 
+        . f f 1 1 1 1 1 1 c f . . . 
+        f c 1 1 1 1 1 1 1 1 d f . . 
+        f f f f f f f f d 1 1 f . . 
+        f 5 5 5 f f f f f b 1 f f . 
+        f f 5 5 5 f f f f c 1 f c f 
+        f f f 5 5 5 f f f c 1 f 1 f 
+        f f f f 5 f f f c d 1 f c f 
+        f b d d b d d d 1 d f b b f 
+        f b d d d d d d d c f 1 1 f 
+        . f f f f f f f f f f 1 1 f 
+        . . f b d 1 b c d c f 1 1 f 
+        . . f f f f f d 1 b f b c f 
+        . . f d 1 b f 1 1 b f f f . 
+        . . f c b c f c b c f . . . 
+        `,img`
+        . . f f f f f f f f . . . . 
+        . f f 1 1 1 1 1 1 c f . . . 
+        f c 1 1 1 1 1 1 1 1 d f . . 
+        f f f f f f f f d 1 1 f . . 
+        f 5 5 5 f f f f f b 1 f f . 
+        f f 5 5 5 f f f f c 1 f c f 
+        f f f 5 5 5 f f f c 1 f 1 f 
+        f f f f 5 f f f c d 1 f c f 
+        f b d d b d d d 1 d f b b f 
+        f b d d d d d d d c f 1 1 f 
+        . f f f f f f f f f f 1 1 f 
+        . . f b d 1 b c d c f 1 1 f 
+        . . f f f f f d 1 b f b c f 
+        . . f d 1 b f 1 1 b f f f . 
+        . . f c b c f f f f f . . . 
+        `,img`
+        . . f f f f f f f f . . . . 
+        . f f 1 1 1 1 1 1 c f . . . 
+        f c 1 1 1 1 1 1 1 1 d f . . 
+        f f f f f f f f d 1 1 f . . 
+        f 5 5 5 f f f f f b 1 f f . 
+        f f 5 5 5 f f f f c 1 f c f 
+        f f f 5 5 5 f f f c 1 f 1 f 
+        f f f f 5 f f f c d 1 f c f 
+        f b d d b d d d 1 d f b b f 
+        f b d d d d d d d c f 1 1 f 
+        . f f f f f f f f f f 1 1 f 
+        . . f b d 1 b c d c f 1 1 f 
+        . . f f f f f d 1 b f b c f 
+        . . f d 1 b f f f f f f f . 
+        . . f c b c f . . . . . . . 
+        `,img`
+        . . f f f f f f f f . . . . 
+        . f f 1 1 1 1 1 1 c f . . . 
+        f c 1 1 1 1 1 1 1 1 d f . . 
+        f f f f f f f f d 1 1 f . . 
+        f 5 5 5 f f f f f b 1 f f . 
+        f f 5 5 5 f f f f c 1 f c f 
+        f f f 5 5 5 f f f c 1 f 1 f 
+        f f f f 5 f f f c d 1 f c f 
+        f b d d b d d d 1 d f b b f 
+        f b d d d d d d d c f 1 1 f 
+        . f f f f f f f f f f 1 1 f 
+        . . f b d 1 b c d c f 1 1 f 
+        . . f f f f f d 1 b f b c f 
+        . . f d 1 b f 1 1 b f f f . 
+        . . f c b c f f f f f . . . 
+        `,img`
+        . . f f f f f f f f . . . . 
+        . f f 1 1 1 1 1 1 c f . . . 
+        f c 1 1 1 1 1 1 1 1 d f . . 
+        f f f f f f f f d 1 1 f . . 
+        f 5 5 5 f f f f f b 1 f f . 
+        f f 5 5 5 f f f f c 1 f c f 
+        f f f 5 5 5 f f f c 1 f 1 f 
+        f f f f 5 f f f c d 1 f c f 
+        f b d d b d d d 1 d f b b f 
+        f b d d d d d d d c f 1 1 f 
+        . f f f f f f f f f f 1 1 f 
+        . . f b d 1 b c d c f 1 1 f 
+        . . f f f f f d 1 b f b c f 
+        . . f d 1 b f 1 1 b f f f . 
+        . . f c b c f c b c f . . . 
+        `,img`
+        . . f f f f f f f f . . . . 
+        . f f 1 1 1 1 1 1 c f . . . 
+        f c 1 1 1 1 1 1 1 1 d f . . 
+        f f f f f f f f d 1 1 f . . 
+        f 5 5 5 f f f f f b 1 f f . 
+        f f 5 5 5 f f f f c 1 f c f 
+        f f f 5 5 5 f f f c 1 f 1 f 
+        f f f f 5 f f f c d 1 f c f 
+        f b d d b d d d 1 d f b b f 
+        f b d d d d d d d c f 1 1 f 
+        . f f f f f f f f f f 1 1 f 
+        . . f b d 1 b c d c f 1 1 f 
+        . . f f f f f d 1 b f b c f 
+        . . f d 1 b f 1 1 b f f f . 
+        . . f f f f f c b c f . . . 
+        `,img`
+        . . f f f f f f f f . . . . 
+        . f f 1 1 1 1 1 1 c f . . . 
+        f c 1 1 1 1 1 1 1 1 d f . . 
+        f f f f f f f f d 1 1 f . . 
+        f 5 5 5 f f f f f b 1 f f . 
+        f f 5 5 5 f f f f c 1 f c f 
+        f f f 5 5 5 f f f c 1 f 1 f 
+        f f f f 5 f f f c d 1 f c f 
+        f b d d b d d d 1 d f b b f 
+        f b d d d d d d d c f 1 1 f 
+        . f f f f f f f f f f 1 1 f 
+        . . f b d 1 b c d c f 1 1 f 
+        . . f d 1 b f d 1 b f b c f 
+        . . f f f f f 1 1 b f f f . 
+        . . . . . . f c b c f . . . 
+        `,img`
+        . . f f f f f f f f . . . . 
+        . f f 1 1 1 1 1 1 c f . . . 
+        f c 1 1 1 1 1 1 1 1 d f . . 
+        f f f f f f f f d 1 1 f . . 
+        f 5 5 5 f f f f f b 1 f f . 
+        f f 5 5 5 f f f f c 1 f c f 
+        f f f 5 5 5 f f f c 1 f 1 f 
+        f f f f 5 f f f c d 1 f c f 
+        f b d d b d d d 1 d f b b f 
+        f b d d d d d d d c f 1 1 f 
+        . f f f f f f f f f f 1 1 f 
+        . . f b d 1 b c d c f 1 1 f 
+        . . f f f f f d 1 b f b c f 
+        . . f d 1 b f 1 1 b f f f . 
+        . . f f f f f c b c f . . . 
+        `],
+    50,
+    true
+    )
 })
 scene.onOverlapTile(SpriteKind.Enemy, assets.tile`tile2`, function (sprite, location) {
     tiles.setTileAt(location, assets.tile`tile1`)
@@ -191,6 +378,142 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`tile1`, function (sprite, loc
         level_select()
         levelStart()
     }
+})
+controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    animation.runImageAnimation(
+    mySprite,
+    [img`
+        . . . . f f f f f f f f . . 
+        . . . f c 1 1 1 1 1 1 f f . 
+        . . f d 1 1 1 1 1 1 1 1 c f 
+        . . f 1 1 d f f f f f f f f 
+        . f f 1 b f f f f f 5 5 5 f 
+        f c f 1 c f f f f 5 5 5 f f 
+        f 1 f 1 c f f f 5 5 5 f f f 
+        f c f 1 d c f f f 5 f f f f 
+        f b b f d 1 d d d b d d b f 
+        f 1 1 f c d d d d d d d b f 
+        f 1 1 f f f f f f f f f f . 
+        f 1 1 f c d c b 1 d b f . . 
+        f c b f b 1 d f f f f f . . 
+        . f f f b 1 1 f b 1 d f . . 
+        . . . f c b c f c b c f . . 
+        `,img`
+        . . . . f f f f f f f f . . 
+        . . . f c 1 1 1 1 1 1 f f . 
+        . . f d 1 1 1 1 1 1 1 1 c f 
+        . . f 1 1 d f f f f f f f f 
+        . f f 1 b f f f f f 5 5 5 f 
+        f c f 1 c f f f f 5 5 5 f f 
+        f 1 f 1 c f f f 5 5 5 f f f 
+        f c f 1 d c f f f 5 f f f f 
+        f b b f d 1 d d d b d d b f 
+        f 1 1 f c d d d d d d d b f 
+        f 1 1 f f f f f f f f f f . 
+        f 1 1 f c d c b 1 d b f . . 
+        f c b f b 1 d f f f f f . . 
+        . f f f b 1 1 f b 1 d f . . 
+        . . . f f f f f c b c f . . 
+        `,img`
+        . . . . f f f f f f f f . . 
+        . . . f c 1 1 1 1 1 1 f f . 
+        . . f d 1 1 1 1 1 1 1 1 c f 
+        . . f 1 1 d f f f f f f f f 
+        . f f 1 b f f f f f 5 5 5 f 
+        f c f 1 c f f f f 5 5 5 f f 
+        f 1 f 1 c f f f 5 5 5 f f f 
+        f c f 1 d c f f f 5 f f f f 
+        f b b f d 1 d d d b d d b f 
+        f 1 1 f c d d d d d d d b f 
+        f 1 1 f f f f f f f f f f . 
+        f 1 1 f c d c b 1 d b f . . 
+        f c b f b 1 d f f f f f . . 
+        . f f f f f f f b 1 d f . . 
+        . . . . . . . f c b c f . . 
+        `,img`
+        . . . . f f f f f f f f . . 
+        . . . f c 1 1 1 1 1 1 f f . 
+        . . f d 1 1 1 1 1 1 1 1 c f 
+        . . f 1 1 d f f f f f f f f 
+        . f f 1 b f f f f f 5 5 5 f 
+        f c f 1 c f f f f 5 5 5 f f 
+        f 1 f 1 c f f f 5 5 5 f f f 
+        f c f 1 d c f f f 5 f f f f 
+        f b b f d 1 d d d b d d b f 
+        f 1 1 f c d d d d d d d b f 
+        f 1 1 f f f f f f f f f f . 
+        f 1 1 f c d c b 1 d b f . . 
+        f c b f b 1 d f f f f f . . 
+        . f f f b 1 1 f b 1 d f . . 
+        . . . f f f f f c b c f . . 
+        `,img`
+        . . . . f f f f f f f f . . 
+        . . . f c 1 1 1 1 1 1 f f . 
+        . . f d 1 1 1 1 1 1 1 1 c f 
+        . . f 1 1 d f f f f f f f f 
+        . f f 1 b f f f f f 5 5 5 f 
+        f c f 1 c f f f f 5 5 5 f f 
+        f 1 f 1 c f f f 5 5 5 f f f 
+        f c f 1 d c f f f 5 f f f f 
+        f b b f d 1 d d d b d d b f 
+        f 1 1 f c d d d d d d d b f 
+        f 1 1 f f f f f f f f f f . 
+        f 1 1 f c d c b 1 d b f . . 
+        f c b f b 1 d f f f f f . . 
+        . f f f b 1 1 f b 1 d f . . 
+        . . . f c b c f c b c f . . 
+        `,img`
+        . . . . f f f f f f f f . . 
+        . . . f c 1 1 1 1 1 1 f f . 
+        . . f d 1 1 1 1 1 1 1 1 c f 
+        . . f 1 1 d f f f f f f f f 
+        . f f 1 b f f f f f 5 5 5 f 
+        f c f 1 c f f f f 5 5 5 f f 
+        f 1 f 1 c f f f 5 5 5 f f f 
+        f c f 1 d c f f f 5 f f f f 
+        f b b f d 1 d d d b d d b f 
+        f 1 1 f c d d d d d d d b f 
+        f 1 1 f f f f f f f f f f . 
+        f 1 1 f c d c b 1 d b f . . 
+        f c b f b 1 d f f f f f . . 
+        . f f f b 1 1 f b 1 d f . . 
+        . . . f c b c f f f f f . . 
+        `,img`
+        . . . . f f f f f f f f . . 
+        . . . f c 1 1 1 1 1 1 f f . 
+        . . f d 1 1 1 1 1 1 1 1 c f 
+        . . f 1 1 d f f f f f f f f 
+        . f f 1 b f f f f f 5 5 5 f 
+        f c f 1 c f f f f 5 5 5 f f 
+        f 1 f 1 c f f f 5 5 5 f f f 
+        f c f 1 d c f f f 5 f f f f 
+        f b b f d 1 d d d b d d b f 
+        f 1 1 f c d d d d d d d b f 
+        f 1 1 f f f f f f f f f f . 
+        f 1 1 f c d c b 1 d b f . . 
+        f c b f b 1 d f b 1 d f . . 
+        . f f f b 1 1 f f f f f . . 
+        . . . f c b c f . . . . . . 
+        `,img`
+        . . . . f f f f f f f f . . 
+        . . . f c 1 1 1 1 1 1 f f . 
+        . . f d 1 1 1 1 1 1 1 1 c f 
+        . . f 1 1 d f f f f f f f f 
+        . f f 1 b f f f f f 5 5 5 f 
+        f c f 1 c f f f f 5 5 5 f f 
+        f 1 f 1 c f f f 5 5 5 f f f 
+        f c f 1 d c f f f 5 f f f f 
+        f b b f d 1 d d d b d d b f 
+        f 1 1 f c d d d d d d d b f 
+        f 1 1 f f f f f f f f f f . 
+        f 1 1 f c d c b 1 d b f . . 
+        f c b f b 1 d f f f f f . . 
+        . f f f b 1 1 f b 1 d f . . 
+        . . . f c b c f f f f f . . 
+        `],
+    50,
+    true
+    )
 })
 scene.onOverlapTile(SpriteKind.Im, assets.tile`tile13`, function (sprite, location) {
     levelFinish()
@@ -207,6 +530,9 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`tile6`, function (sprite, loc
     } else if (sprite.vy == speed) {
         sprite.vy = speed / 7
     }
+})
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+	
 })
 scene.onHitWall(SpriteKind.Im, function (sprite, location) {
     if (controller.A.isPressed() && tiles.tileAtLocationEquals(location, sprites.dungeon.floorLight5)) {
@@ -251,10 +577,14 @@ scene.onOverlapTile(SpriteKind.Im, assets.tile`tile-off`, function (sprite, loca
             tiles.setTileAt(value3, assets.tile`tile0`)
             tiles.setWallAt(value3, true)
         }
-        game.splash("Двигатели запущены. Вперед! К звездам!")
-        runBust = tiles.getTilesByType(assets.tile`tile12`)
-        for (let value of runBust) {
-            tiles.setTileAt(value, assets.tile`tile13`)
+        if (Meteor.length == 0) {
+            game.splash("Двигатели запущены. Путь свободен! К звездам!")
+            runBust = tiles.getTilesByType(assets.tile`tile12`)
+            for (let value of runBust) {
+                tiles.setTileAt(value, assets.tile`tile13`)
+            }
+        } else {
+            game.splash("Двигатели запущены. Удали метеориты!")
         }
     }
 })
@@ -306,9 +636,11 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
     sprite.startEffect(effects.starField, 500)
 })
 let sumKill = 0
-let runBust: tiles.Location[] = []
 let fare2: tiles.Location[] = []
 let fire1: tiles.Location[] = []
+let runBust: tiles.Location[] = []
+let ScorMeteor = 0
+let Meteor: Sprite[] = []
 let kill: number[] = []
 let list2: number[] = []
 let Commanda: Sprite[] = []
@@ -645,6 +977,11 @@ mySprite = sprites.create(img`
     `, SpriteKind.Im)
 tiles.placeOnRandomTile(mySprite, assets.tile`transparency16`)
 scene.cameraFollowSprite(mySprite)
+game.onUpdate(function () {
+    if (mySprite.vx == 0 && mySprite.vy == 0) {
+        animation.stopAnimation(animation.AnimationTypes.All, mySprite)
+    }
+})
 game.onUpdateInterval(500, function () {
     for (let value22 of Commanda) {
         if (kill[Commanda.indexOf(value22)] == 0) {
