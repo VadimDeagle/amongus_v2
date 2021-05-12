@@ -1,10 +1,12 @@
 namespace SpriteKind {
     export const Im = SpriteKind.create()
     export const Meteor = SpriteKind.create()
+    export const Trup = SpriteKind.create()
 }
 sprites.onOverlap(SpriteKind.Im, SpriteKind.Enemy, function (sprite, otherSprite) {
     tiles.placeOnRandomTile(sprite, assets.tile`transparency16`)
     info.changeLifeBy(-1)
+    music.thump.play()
     sprite.startEffect(effects.rings, 500)
 })
 function levelStart () {
@@ -589,7 +591,7 @@ scene.onOverlapTile(SpriteKind.Im, assets.tile`tile-off`, function (sprite, loca
     }
 })
 scene.onOverlapTile(SpriteKind.Im, assets.tile`tile6`, function (sprite, location) {
-    controller.moveSprite(mySprite, 20, 20)
+    controller.moveSprite(mySprite, 15, 15)
 })
 scene.onOverlapTile(SpriteKind.Im, assets.tile`transparency16`, function (sprite, location) {
     controller.moveSprite(mySprite, 150, 150)
@@ -632,10 +634,10 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
         . . . f e e e f f 2 2 2 f . . . 
         . . . . f f f . . f f f . . . . 
         `)
+    sprite.setKind(SpriteKind.Trup)
     sprite.setVelocity(0, 0)
     sprite.startEffect(effects.starField, 500)
 })
-let sumKill = 0
 let fare2: tiles.Location[] = []
 let fire1: tiles.Location[] = []
 let runBust: tiles.Location[] = []
@@ -792,7 +794,8 @@ game.setDialogCursor(img`
     . . . . . . . . . . . . . . . . 
     `)
 game.showLongText("Задача: активировать все терминалы для запуска всех систем корабля.", DialogLayout.Bottom)
-game.showLongText("Задача: запустить двигатели и нажать кнопку ON, для старта", DialogLayout.Bottom)
+game.showLongText("Задача: запустить двигатели и уничтожить все метеориты", DialogLayout.Bottom)
+game.showLongText("Задача: нажать кнопку ON, для старта", DialogLayout.Bottom)
 game.setDialogCursor(img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
@@ -984,7 +987,7 @@ game.onUpdate(function () {
 })
 game.onUpdateInterval(500, function () {
     for (let value22 of Commanda) {
-        if (kill[Commanda.indexOf(value22)] == 0) {
+        if (value22.kind() != SpriteKind.Trup) {
             if (list2[Commanda.indexOf(value22)] == -1) {
                 value22.vy = 0 - speed
             } else if (list2[Commanda.indexOf(value22)] == 1) {
@@ -1005,11 +1008,8 @@ game.onUpdateInterval(500, function () {
             }
         }
     }
-    sumKill = 0
-    for (let value of kill) {
-        sumKill = sumKill + value
-    }
-    if (sumKill == kill.length) {
+    if (sprites.allOfKind(SpriteKind.Player).length == 0) {
+        game.showLongText("Вся ваша команда погибла...", DialogLayout.Bottom)
         game.over(false)
     }
 })
