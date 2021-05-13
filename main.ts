@@ -188,6 +188,11 @@ function levelStart () {
         tiles.setTileAt(value, assets.tile`tile6`)
     }
 }
+scene.onOverlapTile(SpriteKind.Im, sprites.dungeon.collectibleRedCrystal, function (sprite, location) {
+    timer.throttle("action", 1000, function () {
+        tiles.placeOnRandomTile(sprite, sprites.dungeon.collectibleBlueCrystal)
+    })
+})
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
 	
 })
@@ -218,6 +223,17 @@ function destroyMeteor (mySprite: Sprite) {
         } else {
             game.splash("Путь свободен! Запустите двигатели!")
         }
+    }
+}
+function doTestTaskComplit () {
+    if (Meteor.length == 0) {
+        game.splash("Двигатели запущены. Путь свободен! К звездам!")
+        runBust = tiles.getTilesByType(assets.tile`tile12`)
+        for (let value of runBust) {
+            tiles.setTileAt(value, assets.tile`tile13`)
+        }
+    } else {
+        game.splash("Двигатели запущены. Удали метеориты!")
     }
 }
 sprites.onOverlap(SpriteKind.Im, SpriteKind.Meteor, function (sprite, otherSprite) {
@@ -368,9 +384,19 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     true
     )
 })
+scene.onOverlapTile(SpriteKind.Enemy, sprites.dungeon.collectibleBlueCrystal, function (sprite, location) {
+    timer.throttle("action", 1000, function () {
+        tiles.placeOnRandomTile(sprite, sprites.dungeon.collectibleRedCrystal)
+    })
+})
 scene.onOverlapTile(SpriteKind.Enemy, assets.tile`tile2`, function (sprite, location) {
     tiles.setTileAt(location, assets.tile`tile1`)
     info.setScore(tiles.getTilesByType(assets.tile`tile1`).length)
+})
+scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleBlueCrystal, function (sprite, location) {
+    timer.throttle("action", 1000, function () {
+        tiles.placeOnRandomTile(sprite, sprites.dungeon.collectibleRedCrystal)
+    })
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`tile1`, function (sprite, location) {
     tiles.setTileAt(location, assets.tile`tile2`)
@@ -533,6 +559,11 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`tile6`, function (sprite, loc
         sprite.vy = speed / 7
     }
 })
+scene.onOverlapTile(SpriteKind.Im, sprites.dungeon.collectibleBlueCrystal, function (sprite, location) {
+    timer.throttle("action", 1000, function () {
+        tiles.placeOnRandomTile(sprite, sprites.dungeon.collectibleRedCrystal)
+    })
+})
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
 	
 })
@@ -579,15 +610,7 @@ scene.onOverlapTile(SpriteKind.Im, assets.tile`tile-off`, function (sprite, loca
             tiles.setTileAt(value3, assets.tile`tile0`)
             tiles.setWallAt(value3, true)
         }
-        if (Meteor.length == 0) {
-            game.splash("Двигатели запущены. Путь свободен! К звездам!")
-            runBust = tiles.getTilesByType(assets.tile`tile12`)
-            for (let value of runBust) {
-                tiles.setTileAt(value, assets.tile`tile13`)
-            }
-        } else {
-            game.splash("Двигатели запущены. Удали метеориты!")
-        }
+        doTestTaskComplit()
     }
 })
 scene.onOverlapTile(SpriteKind.Im, assets.tile`tile6`, function (sprite, location) {
@@ -607,6 +630,11 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`transparency16`, function (sp
         sprite.vy = speed
     }
 })
+scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleRedCrystal, function (sprite, location) {
+    timer.throttle("action", 1000, function () {
+        tiles.placeOnRandomTile(sprite, sprites.dungeon.collectibleBlueCrystal)
+    })
+})
 function levelFinish () {
     level += 1
     game.splash("Уровень " + ("" + level) + " пройден! Готов к следующему уровню?")
@@ -614,6 +642,11 @@ function levelFinish () {
         value4.destroy()
     }
 }
+scene.onOverlapTile(SpriteKind.Enemy, sprites.dungeon.collectibleRedCrystal, function (sprite, location) {
+    timer.throttle("action", 1000, function () {
+        tiles.placeOnRandomTile(sprite, sprites.dungeon.collectibleBlueCrystal)
+    })
+})
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
     kill[Commanda.indexOf(sprite)] = 1
     sprite.setImage(img`
